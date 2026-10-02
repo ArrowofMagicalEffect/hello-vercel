@@ -1,6 +1,7 @@
 import { createClient } from '@vercel/kv'
 
-const COUNTER_KEY = 'demo:counter'
+// 本地调试时可用 COUNTER_KEY 换一个 key，避免污染生产数据
+const COUNTER_KEY = process.env.COUNTER_KEY || 'demo:counter'
 
 // 匹配任意前缀的 Upstash REST 凭证：
 // UPSTASH_REDIS_REST_URL / KV_REST_API_URL / STORAGE_URL 等都能命中，排除 VERCEL_ 自带变量
@@ -19,7 +20,9 @@ let store: CounterStore | null = null
 
 function findCredentials() {
   for (const [key, url] of Object.entries(process.env)) {
-    if (!url?.startsWith('https://') || !CREDENTIAL_URL_KEY.test(key)) continue
+    // 线上是 https，本地 serverless-redis-http 是 http://localhost
+    const isHttpUrl = url?.startsWith('https://') || url?.startsWith('http://localhost')
+    if (!isHttpUrl || !CREDENTIAL_URL_KEY.test(key)) continue
     const prefix = key.slice(0, -URL_SUFFIX.length)
     const token = process.env[`${prefix}_TOKEN`]
     if (token) return { url, token, source: prefix }
