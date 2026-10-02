@@ -3,6 +3,7 @@ export default defineEventHandler(async () => {
   return {
     count: await store.incr(),
     backend: store.backend,
+    source: store.source,
     env: envFlags()
   }
 })

@@ -2,7 +2,8 @@
 type CounterResponse = {
   count: number
   backend: 'vercel-kv' | 'memory'
-  env: Record<string, boolean>
+  source: string | null
+  env: Record<string, boolean | string | null | string[]>
 }
 
 const { data, refresh } = await useFetch<CounterResponse>('/api/counter')
@@ -13,9 +14,13 @@ const pending = ref(false)
 const error = ref('')
 const missingEnv = computed(() =>
   Object.entries(data.value?.env ?? {})
-    .filter(([, ok]) => !ok)
+    .filter(([, ok]) => ok === false)
     .map(([name]) => name)
 )
+const candidates = computed(() => {
+  const raw = data.value?.env?.candidates
+  return Array.isArray(raw) ? raw : []
+})
 
 async function increment() {
   pending.value = true
@@ -57,6 +62,9 @@ async function increment() {
             <br>
             当前为进程内存计数，冷启动后会重置。缺失的环境变量：
             <code>{{ missingEnv.join(', ') || '无' }}</code>
+            <br>
+            检测到的相关变量名：
+            <code>{{ candidates.join(', ') || '无' }}</code>
           </template>
         </p>
       </section>
