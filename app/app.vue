@@ -1,5 +1,9 @@
 <script setup lang="ts">
-type CounterResponse = { count: number, backend: 'vercel-kv' | 'memory' }
+type CounterResponse = {
+  count: number
+  backend: 'vercel-kv' | 'memory'
+  env: Record<string, boolean>
+}
 
 const { data, refresh } = await useFetch<CounterResponse>('/api/counter')
 
@@ -7,6 +11,11 @@ const count = computed(() => data.value?.count ?? 0)
 const backend = computed(() => data.value?.backend ?? '')
 const pending = ref(false)
 const error = ref('')
+const missingEnv = computed(() =>
+  Object.entries(data.value?.env ?? {})
+    .filter(([, ok]) => !ok)
+    .map(([name]) => name)
+)
 
 async function increment() {
   pending.value = true
@@ -46,7 +55,8 @@ async function increment() {
           <code>{{ backend || 'unknown' }}</code>
           <template v-if="backend === 'memory'">
             <br>
-            当前为进程内存计数，冷启动后会重置。配置 Vercel KV 后即可持久化。
+            当前为进程内存计数，冷启动后会重置。缺失的环境变量：
+            <code>{{ missingEnv.join(', ') || '无' }}</code>
           </template>
         </p>
       </section>

@@ -36,3 +36,13 @@ export function useCounterStore(): CounterStore {
   store ??= createStore()
   return store
 }
+
+// 只返回布尔值，用于排查环境变量是否注入，不暴露任何密钥
+export function envFlags() {
+  return {
+    UPSTASH_REDIS_REST_URL: Boolean(process.env.UPSTASH_REDIS_REST_URL),
+    UPSTASH_REDIS_REST_TOKEN: Boolean(process.env.UPSTASH_REDIS_REST_TOKEN),
+    KV_REST_API_URL: Boolean(process.env.KV_REST_API_URL),
+    KV_REST_API_TOKEN: Boolean(process.env.KV_REST_API_TOKEN)
+  }
+}
