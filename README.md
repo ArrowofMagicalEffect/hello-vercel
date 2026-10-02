@@ -78,7 +78,7 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 计数器读写走 `server/api/counter.get.ts` / `counter.post.ts`，存储层在 `server/utils/counter-store.ts`。
 
-- 配置了 `KV_REST_API_URL` + `KV_REST_API_TOKEN` → 使用 Vercel KV（Upstash Redis），数据持久化
+- 配置了 `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`（或旧版 `KV_REST_API_URL` + `KV_REST_API_TOKEN`）→ 使用 Upstash Redis，数据持久化
 - 未配置 → 回退到进程内存计数，冷启动后归零（页面底部会提示当前后端）
 
 部署到 Vercel：

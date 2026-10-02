@@ -12,8 +12,9 @@ let memoryValue = 0
 let store: CounterStore | null = null
 
 function createStore(): CounterStore {
-  const url = process.env.KV_REST_API_URL
-  const token = process.env.KV_REST_API_TOKEN
+  // 兼容旧版 Vercel KV 与新版 Upstash Marketplace 两套变量名
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
 
   if (url && token) {
     const kv = createClient({ url, token })
